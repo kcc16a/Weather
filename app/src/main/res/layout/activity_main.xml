@@ -11,9 +11,18 @@
         <LinearLayout android:id="@+id/addressContainer" android:layout_width="match_parent"
             android:layout_height="wrap_content" android:orientation="vertical"
             android:gravity="center">
-            <TextView android:id="@+id/address" android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:textSize="24dp"
-                android:text="DHAKA, BD"/>
+
+            <EditText
+                android:id="@+id/address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="Name"
+                android:textAlignment="center" />
+
             <TextView android:id="@+id/updated_at" android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:textSize="14dp"
                 android:text="20 April 2012, 20:08 PM"/>
@@ -141,6 +150,17 @@
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/feelsLike"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="119dp"
+            android:layout_marginBottom="203dp"
+            android:text="TextView"
+            android:textAlignment="center" />
     </RelativeLayout>
 
 

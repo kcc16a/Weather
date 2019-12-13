@@ -1,11 +1,13 @@
 package com.example.weather;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.androdocs.httprequest.HttpRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,16 +16,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import static android.net.wifi.rtt.CivicLocationKeys.CITY;
-
 public class MainActivity extends AppCompatActivity {
 
-    String City = "Abilene,TX";
+    String Latitude = "";
+    String Longitude = "";
     String API = "b104e406638189625276831dd7cfc1e0";
 
-
     TextView addressTxt, updated_atTxt, statusTxt, tempTxt, temp_minTxt, temp_maxTxt, sunriseTxt,
-            sunsetTxt, windTxt, pressureTxt, humidityTxt;
+            sunsetTxt, windTxt, pressureTxt, humidityTxt, feelsLikeTxt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
         windTxt = findViewById(R.id.wind);
         pressureTxt = findViewById(R.id.pressure);
         humidityTxt = findViewById(R.id.humidity);
+        feelsLikeTxt = findViewById(R.id.feelsLike);
 
         new weatherTask().execute();
     }
@@ -50,13 +51,14 @@ public class MainActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
 
-            findViewById(R.id.loader). setVisibility(View.VISIBLE);
+            /* Showing the ProgressBar, Making the main design GONE */
+            findViewById(R.id.loader).setVisibility(View.VISIBLE);
             findViewById(R.id.mainContainer).setVisibility(View.GONE);
             findViewById(R.id.errorText).setVisibility(View.GONE);
         }
 
         protected String doInBackground(String... args) {
-            String response = HttpRequest.excuteGet("https://api.darksky.net/forecast/0123456789abcdef9876543210fedcba" + City + "&units=metric&appid=" + API);
+            String response = HttpRequest.excuteGet("https://api.darksky.net/forecast/"+ API + "/" + Latitude + "," + Longitude );
             return response;
         }
 
@@ -66,25 +68,24 @@ public class MainActivity extends AppCompatActivity {
 
             try {
                 JSONObject jsonObj = new JSONObject(result);
-                JSONObject main = jsonObj.getJSONObject("main");
-                JSONObject sys = jsonObj.getJSONObject("sys");
-                JSONObject wind = jsonObj.getJSONObject("wind");
-                JSONObject weather = jsonObj.getJSONArray("weather").getJSONObject(0);
+                JSONObject main = jsonObj.getJSONObject("currently");
+                JSONObject sys = jsonObj.getJSONObject("daily");
 
-                Long updatedAt = jsonObj.getLong("dt");
+                Long updatedAt = jsonObj.getLong("time");
+                String feelsLike = " Feels Like: " + main.getString("apparentTemperature") + "°C";
                 String updatedAtText = "Updated at: " + new SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.ENGLISH).format(new Date(updatedAt * 1000));
                 String temp = main.getString("temp") + "°C";
-                String tempMin = "Min Temp: " + main.getString("temp_min") + "°C";
-                String tempMax = "Max Temp: " + main.getString("temp_max") + "°C";
+                String tempMin = "Min Temp: " + main.getString("temperatureLow") + "°C";
+                String tempMax = "Max Temp: " + main.getString("temperatureHigh") + "°C";
                 String pressure = main.getString("pressure");
                 String humidity = main.getString("humidity");
 
-                Long sunrise = sys.getLong("sunrise");
-                Long sunset = sys.getLong("sunset");
-                String windSpeed = wind.getString("speed");
-                String weatherDescription = weather.getString("description");
+                Long sunrise = sys.getLong("sunriseTime");
+                Long sunset = sys.getLong("sunsetTime");
+                String windSpeed = main.getString("windSpeed");
+                String weatherDescription = main.getString("summary");
 
-                String address = jsonObj.getString("name") + ", " + sys.getString("country");
+                String address = jsonObj.getString("latitude") + ", " + sys.getString("longitude");
 
 
                 /* Populating extracted data into our views */
@@ -99,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
                 windTxt.setText(windSpeed);
                 pressureTxt.setText(pressure);
                 humidityTxt.setText(humidity);
+                feelsLikeTxt.setText(feelsLike);
 
                 /* Views populated, Hiding the loader, Showing the main design */
                 findViewById(R.id.loader).setVisibility(View.GONE);
@@ -112,6 +114,4 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
-
-
 }
