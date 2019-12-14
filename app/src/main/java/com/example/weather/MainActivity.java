@@ -20,6 +20,7 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
+    //Write code
 
     private static final String poweredBy = "https://darksky.net/poweredby/";
 
